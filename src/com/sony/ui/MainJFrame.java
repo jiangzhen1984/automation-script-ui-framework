@@ -4,20 +4,22 @@
  */
 package com.sony.ui;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.util.List;
-import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTree;
+import javax.swing.JProgressBar;
+import javax.swing.ProgressMonitor;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import model.Callback;
 import model.Executor;
+import model.Status;
 import model.ToolChain;
 import model.ToolScript;
 import model.xml.ConfigParser;
@@ -26,11 +28,15 @@ import model.xml.ConfigParser;
  *
  * @author jiangzhen
  */
-public class MainJFrame extends javax.swing.JFrame {
+public class MainJFrame extends javax.swing.JFrame implements Callback {
 
     private DefaultTreeModel mToolScriptTreeModel;
+    
+    private MainJFrame mainFrame;
 
     List<ToolChain> toolGroupList;
+    
+    
 
     /**
      * Creates new form MainJFrame
@@ -38,6 +44,7 @@ public class MainJFrame extends javax.swing.JFrame {
     public MainJFrame() {
         initData();
         initComponents();
+        mainFrame = this;
     }
 
     private void initData() {
@@ -82,19 +89,59 @@ public class MainJFrame extends javax.swing.JFrame {
         }
     };
 
+   
+    
+    @Override
+    public void preToolChain(ToolChain toolChain) {
+   //    progressMonitor = new ProgressMonitor(MainJFrame.this,
+    //                                  "Running a Long Task",
+     //                                 "", 0, 100);
+       
+    }
+
+    @Override
+    public void afterToolChain(ToolChain toolChain) {
+        
+    }
+
+    @Override
+    public void preToolScript(ToolScript ts) {
+       
+    }
+
+    @Override
+    public void afterToolScript(ToolScript ts) {
+        
+    }
+
+    @Override
+    public void finished(Status st) {
+      //  progressMonitor.close();
+    }
+
+    @Override
+    public void setProgress(int cent) {
+   //    progressMonitor.setProgress(cent);
+    }
+
     class RunToolActionListener implements ActionListener {
-
+        
+        private Executor exectuor;
         public RunToolActionListener(Executor exectuor) {
-
+            this.exectuor  = exectuor;
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void actionPerformed(ActionEvent e) {  
+   
+            ProgressDlg dialog = new ProgressDlg(MainJFrame.this, true);
+            
+            dialog.setProgress(50);
+            dialog.setVisible(true);
+         //   exectuor.execute(mainFrame);
         }
     };
 
-  
     private void setMenuItem(JPopupMenu popup, ToolChain tc) {
         JMenuItem item = new JMenuItem("Run");
         item.addActionListener(new RunToolActionListener(tc));
@@ -102,7 +149,6 @@ public class MainJFrame extends javax.swing.JFrame {
 
         ToolScript[] ts = tc.getChains();
         for (int i = 0; i < ts.length; i++) {
-
             JMenuItem subItem = new JMenuItem("   " + ts[i].toString());
             subItem.addActionListener(new RunToolActionListener(ts[i]));
             popup.add(subItem);

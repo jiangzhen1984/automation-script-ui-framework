@@ -8,25 +8,20 @@ package model;
  *
  * @author jiangzhen
  */
-public class ToolChain implements Executor{
+public class ToolChain implements Executor {
 
-    @Override
-    public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-     
     public enum Platform {
+
         LINUX,
         WINDOWS,
         LINUX_WINDOWS,
-        UNKNOW;      
-       
+        UNKNOW;
+
     }
-    
+
     private String name;
     private Platform platform;
-    
+
     private ToolScript[] chains;
 
     public ToolChain(String name, Platform platform, ToolScript[] chains) {
@@ -34,8 +29,7 @@ public class ToolChain implements Executor{
         this.platform = platform;
         this.chains = chains;
     }
-    
-    
+
     public String getName() {
         return name;
     }
@@ -51,8 +45,7 @@ public class ToolChain implements Executor{
     public void setChains(ToolScript[] chains) {
         this.chains = chains;
     }
-    
-    
+
     public String toString() {
         return name;
     }
@@ -64,18 +57,48 @@ public class ToolChain implements Executor{
     public void setPlatform(Platform platform) {
         this.platform = platform;
     }
-    
-    
-     public static Platform fromString(String str) {
-            if("linux".equalsIgnoreCase(str)) {
-                return Platform.LINUX;
-            } else if ("windoes".equalsIgnoreCase(str)) {
-                return Platform.WINDOWS;
-            } else if("linux_windows".equalsIgnoreCase(str)) {
-                return Platform.LINUX_WINDOWS;
-            } else {
-                return Platform.UNKNOW;
+
+    public static Platform fromString(String str) {
+        if ("linux".equalsIgnoreCase(str)) {
+            return Platform.LINUX;
+        } else if ("windoes".equalsIgnoreCase(str)) {
+            return Platform.WINDOWS;
+        } else if ("linux_windows".equalsIgnoreCase(str)) {
+            return Platform.LINUX_WINDOWS;
+        } else {
+            return Platform.UNKNOW;
+        }
+    }
+
+    @Override
+    public void execute() {
+        execute(null);
+    }
+
+    @Override
+    public void execute(Callback cb) {
+        if (cb != null) {
+            cb.preToolChain(this);
+        }
+        if (chains == null && cb != null) {
+            cb.setProgress(100);
+        }
+        
+        int count = this.chains.length;
+        for (int i=0; i < count; i++) {
+            ToolScript ts = this.chains[i];
+            if(ts != null) {
+                ts.execute(cb);
+            }
+            if (cb != null) {
+                cb.setProgress(i/count * 100);
             }
         }
-    
+        
+        if (cb != null) {
+            cb.setProgress(100);
+            cb.afterToolChain(this);
+        }
+    }
+
 }

@@ -13,4 +13,6 @@ package model;
 public interface Executor {
     
     public void execute();
+    
+    public void execute(Callback cb);
 }
