@@ -8,7 +8,7 @@ package model;
  *
  * @author jiangzhen
  */
-public class ToolScript {
+public class ToolScript implements Executor{
     
     private String name;
     private String command;
@@ -48,6 +48,11 @@ public class ToolScript {
     
     public String toString() {
         return name;
+    }
+
+    @Override
+    public void execute() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

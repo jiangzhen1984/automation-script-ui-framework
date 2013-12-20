@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+<group  name="Check Linux debug Environment" platform="Linux">
+    <tool name="check debuggy" >
+        exit `test \`dpkg -l |grep debuggy | awk '{print \$2}'\` == debuggy`
+    </tool>
+</group>
+
+<group  name="Start trace32" platform="Linux">
+   <tool name="1001" parameters="" >
+t32mqdsp6-qt -c /opt/t32/config_sim.t32, /opt/t32/SEMC/Start_8974_trace_loader.cmm /opt/projects/amss/rhine-8974-cmcc
+   </tool>
+</group>
+</config>

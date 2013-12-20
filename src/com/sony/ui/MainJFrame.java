@@ -4,21 +4,33 @@
  */
 package com.sony.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.util.List;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import model.Executor;
 import model.ToolChain;
 import model.ToolScript;
-
+import model.xml.ConfigParser;
 
 /**
  *
  * @author jiangzhen
  */
 public class MainJFrame extends javax.swing.JFrame {
-    
-    
-    
+
     private DefaultTreeModel mToolScriptTreeModel;
+
+    List<ToolChain> toolGroupList;
 
     /**
      * Creates new form MainJFrame
@@ -27,11 +39,75 @@ public class MainJFrame extends javax.swing.JFrame {
         initData();
         initComponents();
     }
-    
-    
+
     private void initData() {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new ToolChain("Tool Script", null));
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new ToolChain("Tool Script", ToolChain.Platform.UNKNOW, null));
+        try {
+            toolGroupList = new ConfigParser().loadToolScript();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+        for (ToolChain tc : toolGroupList) {
+            root.add(new DefaultMutableTreeNode(tc));
+        }
+
         this.mToolScriptTreeModel = new DefaultTreeModel(root);
+
+    }
+
+    private MouseAdapter selectionListener = new MouseAdapter() {
+
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            try {
+                if (evt.getButton() == evt.BUTTON1) {
+                } else if (evt.getButton() == evt.BUTTON3) {
+                    TreePath path = jTree1.getPathForLocation(evt.getX(), evt.getY());
+                    if (path != null) {
+                        jTree1.setSelectionPath(path);
+                    } else {
+                        return;
+                    }
+                    DefaultMutableTreeNode sNode = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+                    ToolChain tc = (ToolChain) sNode.getUserObject();
+
+                    JPopupMenu popup = new JPopupMenu();
+                    setMenuItem(popup, tc);
+                    popup.show(jTree1, evt.getX(), evt.getY());
+
+                }
+            } catch (Exception e) {
+            }
+        }
+    };
+
+    class RunToolActionListener implements ActionListener {
+
+        public RunToolActionListener(Executor exectuor) {
+
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    };
+
+  
+    private void setMenuItem(JPopupMenu popup, ToolChain tc) {
+        JMenuItem item = new JMenuItem("Run");
+        item.addActionListener(new RunToolActionListener(tc));
+        popup.add(item);
+
+        ToolScript[] ts = tc.getChains();
+        for (int i = 0; i < ts.length; i++) {
+
+            JMenuItem subItem = new JMenuItem("   " + ts[i].toString());
+            subItem.addActionListener(new RunToolActionListener(ts[i]));
+            popup.add(subItem);
+        }
+
     }
 
     /**
@@ -46,6 +122,7 @@ public class MainJFrame extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jTree1.addMouseListener(selectionListener);
         jMenuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -97,12 +174,11 @@ public class MainJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        System.out.println("=====");
         this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void exit(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exit
-      
+
     }//GEN-LAST:event_exit
 
     /**

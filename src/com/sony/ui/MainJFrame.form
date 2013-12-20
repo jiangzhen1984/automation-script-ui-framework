@@ -82,6 +82,10 @@
               <Connection code="mToolScriptTreeModel" type="code"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="jTree1.addMouseListener(selectionListener);&#xa;"/>
+            <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="MainJFrame_jTree1"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
