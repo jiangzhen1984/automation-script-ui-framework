@@ -31,4 +31,10 @@ public class Status {
         return st;
     }
 
+    public ExitStats getSt() {
+        return st;
+    }
+
+ 
+
 }

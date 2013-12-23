@@ -40,12 +40,14 @@ public class ProgressDlg extends javax.swing.JDialog {
         jProgressBar1 = new javax.swing.JProgressBar();
         jButton1 = new javax.swing.JButton();
 
-        setAlwaysOnTop(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setAutoRequestFocus(false);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setFocusCycleRoot(false);
         setFocusableWindowState(false);
+        setModal(false);
         setModalExclusionType(null);
-        setModalityType(java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
+        setUndecorated(true);
         setResizable(false);
 
         jButton1.setText("Canel");

@@ -75,16 +75,17 @@ public class ConfigParser {
             for (int temp = 0; temp < groupList.getLength(); temp++) {
 
                 groupElement = (Element) groupList.item(temp);
-                
 
                 String name = groupElement.getAttribute("name");
                 String platform = groupElement.getAttribute("platform");
                 if (name == null || name.trim().isEmpty()) {
                     throw new RuntimeException(" no name attribute in groud tag.");
                 }
+
+                boolean syn = Boolean.parseBoolean(groupElement.getAttribute("syn").trim());
                 toolList = groupElement.getElementsByTagName("tool");
                 ToolScript[] tl = new ToolScript[toolList.getLength()];
-                
+
                 for (int j = 0; j < toolList.getLength(); j++) {
                     toolElement = (Element) toolList.item(j);
                     if (toolElement.getNodeType() == Node.ELEMENT_NODE) {
@@ -92,13 +93,16 @@ public class ConfigParser {
                         String command = toolElement.getTextContent();
                         String parameters = toolElement.getAttribute("parameters");
                         String scriptName = toolElement.getAttribute("name");
-                        System.out.println("command : " + toolElement.getTextContent());
-                        ToolScript ts = new ToolScript(scriptName, command, parameters.split(" "));
+                        String failedMsg = toolElement.getAttribute("failedMsg");
+                        System.out.println("command : " + toolElement.getTextContent()  +"   "+ syn +"   "+groupElement.getAttribute("syn").trim());
+                        ToolScript ts = new ToolScript(scriptName, command, parameters.split(" "), failedMsg);
                         tl[j] = ts;
                     }
                 }
 
-                li.add(new ToolChain(name.trim(), ToolChain.fromString(platform), tl));
+                ToolChain tc = new ToolChain(name.trim(), ToolChain.fromString(platform), tl);
+                tc.setSyn(syn);
+                li.add(tc);
             }
 
             return li;

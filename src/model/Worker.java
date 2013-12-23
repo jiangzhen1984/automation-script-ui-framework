@@ -3,23 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package model;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author 28851274
  */
 public class Worker extends Thread {
-    
+
     private Callback cb;
-    
+
     private Executor executor;
-    
+
     public Worker(Executor executor) {
         this.executor = executor;
     }
-    
+
     public Worker(Executor executor, Callback cb) {
         this.cb = cb;
         this.executor = executor;
@@ -27,10 +29,12 @@ public class Worker extends Thread {
 
     @Override
     public void run() {
-        if(executor == null) {
+        if (executor == null) {
             throw new RuntimeException(" can't run executor");
         }
+
         executor.execute(cb);
+
     }
 
 }

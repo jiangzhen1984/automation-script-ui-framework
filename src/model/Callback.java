@@ -18,7 +18,7 @@ public interface Callback {
     
     public void afterToolScript(ToolScript ts);
     
-    public void finished(Status st);
+    public void finished(ToolScript ts, Status st);
     
     public void setProgress(int cent);
    

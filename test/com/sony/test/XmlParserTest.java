@@ -45,8 +45,8 @@ public class XmlParserTest {
     public void setUp() {
         String xmlContent = "<?xml version=\"1.0\"?>\n" +
                 "<config>\n " +
-"<group  name=\"test1\" >\n" +
-"	<tool name=\"1001\" parameters=\"\" >\n" +
+"<group  name=\"test1\" syn=\"true\" >\n" +
+"	<tool name=\"1001\" parameters=\"\">\n" +
 "t32mqdsp6-qt -c /opt/t32/config_sim.t32, /opt/t32/SEMC/Start_8974_trace_loader.cmm /opt/projects/amss/rhine-8974-cmcc  \n" +
 "	</tool>\n" +
 "	<tool name=\"2001\">\n" +
@@ -94,5 +94,6 @@ public class XmlParserTest {
         assert(l.size() == 1);
         assert(l.get(0).getChains().length == 2);
          assert(l.get(0).getName().equals("test1"));
+           assert(l.get(0).isSyn());
     }
 }

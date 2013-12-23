@@ -17,11 +17,19 @@ public class ToolScript implements Executor {
     private String name;
     private String command;
     private String[] parameters;
+    private String failedSuggestion;
 
     public ToolScript(String name, String command, String[] parameters) {
         this.name = name;
         this.command = command;
         this.parameters = parameters;
+    }
+    
+     public ToolScript(String name, String command, String[] parameters, String failedSuggestion) {
+        this.name = name;
+        this.command = command;
+        this.parameters = parameters;
+        this.failedSuggestion = failedSuggestion;
     }
 
     public String getName() {
@@ -48,6 +56,16 @@ public class ToolScript implements Executor {
         this.parameters = parameters;
     }
 
+    public String getFailedSuggestion() {
+        return failedSuggestion;
+    }
+
+    public void setFailedSuggestion(String failedSuggestion) {
+        this.failedSuggestion = failedSuggestion;
+    }
+
+    
+    
     public String toString() {
         return name;
     }
@@ -62,21 +80,23 @@ public class ToolScript implements Executor {
         if (cb != null) {
             cb.preToolScript(this);
         }
-        try {
+        try {            
             //TODO need new thread?
             Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
+            System.out.println(command);
             int ret = p.waitFor();
             Status s = Status.fromInt(ret);
             if (cb != null) {
-                cb.finished(s);
+                cb.finished(this, s);
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ToolScript.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
         if (cb != null) {
             cb.afterToolScript(this);
         }
-        }
-
     }
+
+}

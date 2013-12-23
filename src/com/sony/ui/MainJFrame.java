@@ -4,7 +4,6 @@
  */
 package com.sony.ui;
 
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,8 +11,6 @@ import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.ProgressMonitor;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -22,6 +19,7 @@ import model.Executor;
 import model.Status;
 import model.ToolChain;
 import model.ToolScript;
+import model.Worker;
 import model.xml.ConfigParser;
 
 /**
@@ -31,12 +29,14 @@ import model.xml.ConfigParser;
 public class MainJFrame extends javax.swing.JFrame implements Callback {
 
     private DefaultTreeModel mToolScriptTreeModel;
-    
+
     private MainJFrame mainFrame;
 
-    List<ToolChain> toolGroupList;
-    
-    
+    private List<ToolChain> toolGroupList;
+
+    private ProgressDlg dialog;
+
+    private StringBuffer runResult;
 
     /**
      * Creates new form MainJFrame
@@ -89,56 +89,69 @@ public class MainJFrame extends javax.swing.JFrame implements Callback {
         }
     };
 
-   
-    
     @Override
     public void preToolChain(ToolChain toolChain) {
-   //    progressMonitor = new ProgressMonitor(MainJFrame.this,
-    //                                  "Running a Long Task",
-     //                                 "", 0, 100);
-       
+        runResult = new StringBuffer();        
     }
 
     @Override
     public void afterToolChain(ToolChain toolChain) {
-        
+        if (dialog != null) {
+            dialog.setVisible(false);
+            dialog.dispose();
+        }
+
+        if (!runResult.toString().isEmpty()) {
+            JOptionPane.showMessageDialog(null, runResult.toString(), "", JOptionPane.INFORMATION_MESSAGE);
+            runResult = null;
+        }
     }
 
     @Override
     public void preToolScript(ToolScript ts) {
-       
+
     }
 
     @Override
     public void afterToolScript(ToolScript ts) {
-        
+
     }
 
     @Override
-    public void finished(Status st) {
-      //  progressMonitor.close();
+    public void finished(ToolScript ts, Status st) {
+        if (runResult == null) {
+            runResult = new StringBuffer();
+        }
+        runResult.append(ts.getName() + "  executed result: " + st.getSt()).append("\n");
+        if (st.getSt() != Status.ExitStats.SUCCED) {
+            runResult.append("   " + ts.getFailedSuggestion()).append("\n");
+        }
     }
 
     @Override
     public void setProgress(int cent) {
-   //    progressMonitor.setProgress(cent);
+        if (dialog != null && dialog.isVisible()) {
+            dialog.setProgress(cent);
+        }
     }
 
     class RunToolActionListener implements ActionListener {
-        
+
         private Executor exectuor;
+
         public RunToolActionListener(Executor exectuor) {
-            this.exectuor  = exectuor;
+            this.exectuor = exectuor;
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {  
-   
-            ProgressDlg dialog = new ProgressDlg(MainJFrame.this, true);
-            
-            dialog.setProgress(50);
-            dialog.setVisible(true);
-         //   exectuor.execute(mainFrame);
+        public void actionPerformed(ActionEvent e) {
+           
+             if (exectuor instanceof ToolChain && ((ToolChain)exectuor).isSyn() == false) {
+                dialog = new ProgressDlg(MainJFrame.this, true);
+                dialog.setProgress(0);
+                dialog.setVisible(true);
+            }
+              new Worker(exectuor, mainFrame).start();
         }
     };
 
@@ -174,6 +187,7 @@ public class MainJFrame extends javax.swing.JFrame implements Callback {
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jToolBar1.setRollover(true);
 
@@ -217,6 +231,7 @@ public class MainJFrame extends javax.swing.JFrame implements Callback {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed

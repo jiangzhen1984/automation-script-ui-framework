@@ -21,6 +21,8 @@ public class ToolChain implements Executor {
 
     private String name;
     private Platform platform;
+    private boolean syn;
+    
 
     private ToolScript[] chains;
 
@@ -57,6 +59,16 @@ public class ToolChain implements Executor {
     public void setPlatform(Platform platform) {
         this.platform = platform;
     }
+
+    public boolean isSyn() {
+        return syn;
+    }
+
+    public void setSyn(boolean syn) {
+        this.syn = syn;
+    }
+    
+    
 
     public static Platform fromString(String str) {
         if ("linux".equalsIgnoreCase(str)) {
